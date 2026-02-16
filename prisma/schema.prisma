@@ -1,0 +1,55 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Product {
+  id          String   @id @default(uuid())
+  make        String
+  modelNumber String   @unique
+  cpu         String?
+  generation  String?
+  productName String?
+  salePrice   Decimal  @db.Decimal(10, 2)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("products")
+}
+
+model SparePart {
+  id             String   @id @default(uuid())
+  make           String
+  modelNumber    String   @unique
+  cpu            String?
+  generation     String?
+  productName    String?
+  frontPanel     Decimal? @db.Decimal(10, 2)
+  panel          Decimal? @db.Decimal(10, 2)
+  screenNonTouch Decimal? @db.Decimal(10, 2)
+  screenTouch    Decimal? @db.Decimal(10, 2)
+  hinge          Decimal? @db.Decimal(10, 2)
+  touchPad       Decimal? @db.Decimal(10, 2)
+  base           Decimal? @db.Decimal(10, 2)
+  keyboard       Decimal? @db.Decimal(10, 2)
+  battery        Decimal? @db.Decimal(10, 2)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@map("spare_parts")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  name      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("users")
+}

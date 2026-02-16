@@ -1,0 +1,100 @@
+
+> productmaster@0.1.0 lint
+> eslint
+
+
+/Users/apple2/Desktop/productmaster/src/actions/bulk-upload.ts
+    6:26  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   34:48  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   66:19  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   78:50  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  116:19  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/apple2/Desktop/productmaster/src/actions/spare-parts.ts
+  44:11  warning  'sparePart' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/Users/apple2/Desktop/productmaster/src/app/page.tsx
+  6:39  warning  'Plus' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/apple2/Desktop/productmaster/src/app/products/products-client.tsx
+  6:10  warning  'Plus' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/apple2/Desktop/productmaster/src/app/spare-parts/spare-parts-client.tsx
+  6:10  warning  'Plus' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/apple2/Desktop/productmaster/src/components/dashboard/bulk-upload-dialog.tsx
+    9:3   warning  'DialogFooter' is defined but never used      @typescript-eslint/no-unused-vars
+   16:10  warning  'Alert' is defined but never used             @typescript-eslint/no-unused-vars
+   16:17  warning  'AlertDescription' is defined but never used  @typescript-eslint/no-unused-vars
+   16:35  warning  'AlertTitle' is defined but never used        @typescript-eslint/no-unused-vars
+   20:20  error    Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+   28:42  error    Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+   70:16  warning  'err' is defined but never used               @typescript-eslint/no-unused-vars
+  106:16  warning  'err' is defined but never used               @typescript-eslint/no-unused-vars
+  106:21  error    Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+  262:56  error    Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+  291:65  error    Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+
+/Users/apple2/Desktop/productmaster/src/components/dashboard/data-table.tsx
+  54:17  warning  Compilation Skipped: Use of incompatible library
+
+This API returns functions which cannot be memoized without leading to stale UI. To prevent this, by default React Compiler will skip memoizing this component/hook. However, you may see issues if values from this API are passed to other components/hooks that are memoized.
+
+/Users/apple2/Desktop/productmaster/src/components/dashboard/data-table.tsx:54:17
+  52 |   const [rowSelection, setRowSelection] = React.useState({})
+  53 |
+> 54 |   const table = useReactTable({
+     |                 ^^^^^^^^^^^^^ TanStack Table's `useReactTable()` API returns functions that cannot be memoized safely
+  55 |     data,
+  56 |     columns,
+  57 |     onSortingChange: setSorting,  react-hooks/incompatible-library
+
+/Users/apple2/Desktop/productmaster/src/components/dashboard/global-search.tsx
+  10:10  warning  'cn' is defined but never used                                   @typescript-eslint/no-unused-vars
+  15:54  error    Unexpected any. Specify a different type                         @typescript-eslint/no-explicit-any
+  15:73  error    Unexpected any. Specify a different type                         @typescript-eslint/no-explicit-any
+  85:61  error    `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  85:78  error    `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+
+/Users/apple2/Desktop/productmaster/src/components/dashboard/recent-activity.tsx
+  4:10  warning  'Avatar' is defined but never used          @typescript-eslint/no-unused-vars
+  4:18  warning  'AvatarFallback' is defined but never used  @typescript-eslint/no-unused-vars
+  8:58  error    Unexpected any. Specify a different type    @typescript-eslint/no-explicit-any
+
+/Users/apple2/Desktop/productmaster/src/components/dashboard/stats-cards.tsx
+  6:48  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/apple2/Desktop/productmaster/src/components/layout/header.tsx
+  22:5  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/Users/apple2/Desktop/productmaster/src/components/layout/header.tsx:22:5
+  20 |
+  21 |   useEffect(() => {
+> 22 |     setMounted(true)
+     |     ^^^^^^^^^^ Avoid calling setState() directly within an effect
+  23 |   }, [])
+  24 |
+  25 |   return (  react-hooks/set-state-in-effect
+
+/Users/apple2/Desktop/productmaster/src/components/layout/sidebar.tsx
+   7:3   warning  'Building2' is defined but never used                             @typescript-eslint/no-unused-vars
+   9:3   warning  'ShoppingCart' is defined but never used                          @typescript-eslint/no-unused-vars
+  10:3   warning  'Truck' is defined but never used                                 @typescript-eslint/no-unused-vars
+  11:3   warning  'Factory' is defined but never used                               @typescript-eslint/no-unused-vars
+  14:3   warning  'FlaskConical' is defined but never used                          @typescript-eslint/no-unused-vars
+  15:3   warning  'Recycle' is defined but never used                               @typescript-eslint/no-unused-vars
+  16:3   warning  'Repeat' is defined but never used                                @typescript-eslint/no-unused-vars
+  17:3   warning  'DollarSign' is defined but never used                            @typescript-eslint/no-unused-vars
+  18:3   warning  'Settings' is defined but never used                              @typescript-eslint/no-unused-vars
+  19:3   warning  'Database' is defined but never used                              @typescript-eslint/no-unused-vars
+  20:3   warning  'ChevronDown' is defined but never used                           @typescript-eslint/no-unused-vars
+  24:11  error    An interface declaring no members is equivalent to its supertype  @typescript-eslint/no-empty-object-type
+
+✖ 43 problems (18 errors, 25 warnings)
+
