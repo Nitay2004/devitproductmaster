@@ -15,15 +15,9 @@ export async function signUp(formData: FormData) {
   const name = formData.get("name") as string
 
   console.log("Signup attempt for:", email)
-  console.log("Is prisma defined?", !!prisma)
-  if (prisma) {
-    console.log("Prisma keys:", Object.keys(prisma))
-    console.log("Is 'user' in prisma?", 'user' in prisma)
-    console.log("prisma.user type:", typeof (prisma as any).user)
-  }
 
   try {
-    const existingUser = await (prisma as any).user.findUnique({
+    const existingUser = await prisma.user.findUnique({
       where: { email }
     })
 
@@ -62,15 +56,9 @@ export async function signIn(formData: FormData) {
   const password = formData.get("password") as string
 
   console.log("Signin attempt for:", email)
-  console.log("Is prisma defined?", !!prisma)
-  if (prisma) {
-    console.log("Prisma keys:", Object.keys(prisma))
-    console.log("Is 'user' in prisma?", 'user' in prisma)
-    console.log("prisma.user type:", typeof (prisma as any).user)
-  }
 
   try {
-    const user = await (prisma as any).user.findUnique({
+    const user = await prisma.user.findUnique({
       where: { email }
     })
 
@@ -107,27 +95,4 @@ export async function logout() {
   cookieStore.delete("session")
   revalidatePath("/")
   redirect("/login")
-}
-
-export async function getCurrentUser() {
-  try {
-    const cookieStore = await cookies()
-    const sessionId = cookieStore.get("session")?.value
-
-    if (!sessionId) return null
-
-    const user = await prisma.user.findUnique({
-      where: { id: sessionId },
-      select: {
-        id: true,
-        email: true,
-        name: true
-      }
-    })
-
-    return user
-  } catch (error) {
-    console.error("GetCurrentUser error:", error)
-    return null
-  }
 }
