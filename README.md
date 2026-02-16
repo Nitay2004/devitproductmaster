@@ -1,36 +1,74 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ProductMaster Pro
 
-## Getting Started
+Enterprise Product & Spare Parts Management system built with Next.js, Prisma, and Supabase.
 
-First, run the development server:
+## Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- **Inventory Management**: Track products and spare parts with detailed specifications.
+- **Authentication**: Secure login/signup with session management.
+- **User Profile**: Interactive user profile in sidebar and header.
+- **Bulk Upload**: Import data from Excel files.
+- **Global Search**: Quick access to products and parts across the system.
+- **Responsive Dashboard**: Beautiful, modern UI optimized for all devices.
+
+## Tech Stack
+
+- **Framework**: [Next.js 15+](https://nextjs.org) (App Router)
+- **Database**: [Supabase](https://supabase.com) (PostgreSQL)
+- **ORM**: [Prisma](https://prisma.io)
+- **Styling**: [Tailwind CSS](https://tailwindcss.com) 4.0
+- **Animations**: [Framer Motion](https://framer.com/motion)
+- **Components**: [Radix UI](https://www.radix-ui.com) & [Lucide Icons](https://lucide.dev)
+
+## Prerequisites
+
+- [Node.js](https://nodejs.org) (v18+)
+- [Supabase](https://supabase.com) account and database project.
+
+## Environment Variables
+
+Create a `.env` file in the root directory and add the following:
+
+```env
+DATABASE_URL="postgresql://postgres:[PASSWORD]@[HOST]:5432/postgres"
+NEXT_PUBLIC_SUPABASE_URL="https://[PROJECT-ID].supabase.co"
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY="your-supabase-key"
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Setup Instructions
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. **Install dependencies**:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+   ```bash
+   npm install
+   ```
 
-## Learn More
+2. **Generate Prisma Client**:
 
-To learn more about Next.js, take a look at the following resources:
+   ```bash
+   npx prisma generate
+   ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+3. **Database Migration** (if needed):
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+   ```bash
+   npx prisma db push
+   ```
 
-## Deploy on Vercel
+4. **Run development server**:
+   ```bash
+   npm run dev
+   ```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Deployment
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+The easiest way to deploy is via [Vercel](https://vercel.com):
+
+1. Push your code to a GitHub repository.
+2. Connect the repository to Vercel.
+3. Add your environment variables in the Vercel dashboard.
+4. Vercel will automatically build and deploy your application.
+
+## License
+
+MIT
