@@ -96,3 +96,26 @@ export async function logout() {
   revalidatePath("/")
   redirect("/login")
 }
+
+export async function getCurrentUser() {
+  try {
+    const cookieStore = await cookies()
+    const sessionId = cookieStore.get("session")?.value
+
+    if (!sessionId) return null
+
+    const user = await prisma.user.findUnique({
+      where: { id: sessionId },
+      select: {
+        id: true,
+        email: true,
+        name: true
+      }
+    })
+
+    return user
+  } catch (error) {
+    console.error("GetCurrentUser error:", error)
+    return null
+  }
+}
