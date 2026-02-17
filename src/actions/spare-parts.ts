@@ -2,7 +2,7 @@
 
 import { prisma } from "@/lib/prisma"
 import { revalidatePath } from "next/cache"
-import { validateName, validatePrice } from "@/lib/validation"
+import { schemaSparePart } from "@/lib/validation"
 
 export async function getSpareParts() {
   try {
@@ -38,35 +38,37 @@ export async function getSpareParts() {
 
 export async function addSparePart(formData: FormData) {
   try {
-    const make = formData.get("make") as string
-    const modelNumber = formData.get("modelNumber") as string
-    const cpu = formData.get("cpu") as string
-    const generation = formData.get("generation") as string
-    const productName = formData.get("productName") as string
-
-    // Validation
-    const makeVal = validateName(make)
-    if (!makeVal.isValid) return { success: false, error: `Make: ${makeVal.error}` }
-    
-    const modelVal = validateName(modelNumber)
-    if (!modelVal.isValid) return { success: false, error: `Model: ${modelVal.error}` }
-
-    const priceFields = [
-        "frontPanel", "panel", "screenNonTouch", "screenTouch", 
-        "hinge", "touchPad", "base", "keyboard", "battery"
-    ]
-
-    const getDecimal = (key: string) => {
-        const val = formData.get(key)
-        const num = val ? parseFloat(val as string) : null
-        
-        if (num !== null) {
-            const valResult = validatePrice(num, key.replace(/([A-Z])/g, ' $1').trim())
-            if (!valResult.isValid) throw new Error(valResult.error)
-        }
-        
-        return num
+    const rawData = {
+      make: formData.get("make"),
+      modelNumber: formData.get("modelNumber"),
+      cpu: formData.get("cpu"),
+      generation: formData.get("generation"),
+      productName: formData.get("productName"),
+      frontPanel: formData.get("frontPanel"),
+      panel: formData.get("panel"),
+      screenNonTouch: formData.get("screenNonTouch"),
+      screenTouch: formData.get("screenTouch"),
+      hinge: formData.get("hinge"),
+      touchPad: formData.get("touchPad"),
+      base: formData.get("base"),
+      keyboard: formData.get("keyboard"),
+      battery: formData.get("battery"),
     }
+
+    const validatedFields = schemaSparePart.safeParse(rawData)
+
+    if (!validatedFields.success) {
+      return { 
+        success: false, 
+        error: validatedFields.error.errors[0].message 
+      }
+    }
+
+    const { 
+      make, modelNumber, cpu, generation, productName,
+      frontPanel, panel, screenNonTouch, screenTouch, 
+      hinge, touchPad, base, keyboard, battery 
+    } = validatedFields.data
 
     const part = await prisma.sparePart.create({
       data: {
@@ -75,15 +77,15 @@ export async function addSparePart(formData: FormData) {
         cpu: cpu || null,
         generation: generation || null,
         productName: productName || null,
-        frontPanel: getDecimal("frontPanel"),
-        panel: getDecimal("panel"),
-        screenNonTouch: getDecimal("screenNonTouch"),
-        screenTouch: getDecimal("screenTouch"),
-        hinge: getDecimal("hinge"),
-        touchPad: getDecimal("touchPad"),
-        base: getDecimal("base"),
-        keyboard: getDecimal("keyboard"),
-        battery: getDecimal("battery"),
+        frontPanel: frontPanel || null,
+        panel: panel || null,
+        screenNonTouch: screenNonTouch || null,
+        screenTouch: screenTouch || null,
+        hinge: hinge || null,
+        touchPad: touchPad || null,
+        base: base || null,
+        keyboard: keyboard || null,
+        battery: battery || null,
       },
     })
 
@@ -118,30 +120,37 @@ export async function addSparePart(formData: FormData) {
 
 export async function updateSparePart(id: string, formData: FormData) {
   try {
-    const make = formData.get("make") as string
-    const modelNumber = formData.get("modelNumber") as string
-    const cpu = formData.get("cpu") as string
-    const generation = formData.get("generation") as string
-    const productName = formData.get("productName") as string
-
-    // Validation
-    const makeVal = validateName(make)
-    if (!makeVal.isValid) return { success: false, error: `Make: ${makeVal.error}` }
-    
-    const modelVal = validateName(modelNumber)
-    if (!modelVal.isValid) return { success: false, error: `Model: ${modelVal.error}` }
-
-    const getDecimal = (key: string) => {
-        const val = formData.get(key)
-        const num = val ? parseFloat(val as string) : null
-        
-        if (num !== null) {
-            const valResult = validatePrice(num, key.replace(/([A-Z])/g, ' $1').trim())
-            if (!valResult.isValid) throw new Error(valResult.error)
-        }
-        
-        return num
+    const rawData = {
+      make: formData.get("make"),
+      modelNumber: formData.get("modelNumber"),
+      cpu: formData.get("cpu"),
+      generation: formData.get("generation"),
+      productName: formData.get("productName"),
+      frontPanel: formData.get("frontPanel"),
+      panel: formData.get("panel"),
+      screenNonTouch: formData.get("screenNonTouch"),
+      screenTouch: formData.get("screenTouch"),
+      hinge: formData.get("hinge"),
+      touchPad: formData.get("touchPad"),
+      base: formData.get("base"),
+      keyboard: formData.get("keyboard"),
+      battery: formData.get("battery"),
     }
+
+    const validatedFields = schemaSparePart.safeParse(rawData)
+
+    if (!validatedFields.success) {
+      return { 
+        success: false, 
+        error: validatedFields.error.errors[0].message 
+      }
+    }
+
+    const { 
+      make, modelNumber, cpu, generation, productName,
+      frontPanel, panel, screenNonTouch, screenTouch, 
+      hinge, touchPad, base, keyboard, battery 
+    } = validatedFields.data
 
     const part = await prisma.sparePart.update({
       where: { id },
@@ -151,15 +160,15 @@ export async function updateSparePart(id: string, formData: FormData) {
         cpu: cpu || null,
         generation: generation || null,
         productName: productName || null,
-        frontPanel: getDecimal("frontPanel"),
-        panel: getDecimal("panel"),
-        screenNonTouch: getDecimal("screenNonTouch"),
-        screenTouch: getDecimal("screenTouch"),
-        hinge: getDecimal("hinge"),
-        touchPad: getDecimal("touchPad"),
-        base: getDecimal("base"),
-        keyboard: getDecimal("keyboard"),
-        battery: getDecimal("battery"),
+        frontPanel: frontPanel || null,
+        panel: panel || null,
+        screenNonTouch: screenNonTouch || null,
+        screenTouch: screenTouch || null,
+        hinge: hinge || null,
+        touchPad: touchPad || null,
+        base: base || null,
+        keyboard: keyboard || null,
+        battery: battery || null,
       },
     })
 
