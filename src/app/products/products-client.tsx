@@ -3,7 +3,8 @@
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Pencil, Trash2, ArrowUpDown } from "lucide-react"
+import { Pencil, Trash2, ArrowUpDown, AlertCircle } from "lucide-react"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import {
   Dialog,
   DialogContent,
@@ -46,6 +47,7 @@ export function ProductsClient({ initialProducts }: { initialProducts: Product[]
   const [isBulkDeleteDialogOpen, setIsBulkDeleteDialogOpen] = useState(false)
   const [selectedProductsForBulk, setSelectedProductsForBulk] = useState<Product[]>([])
   const [isDeleting, setIsDeleting] = useState(false)
+  const [formError, setFormError] = useState<string | null>(null)
 
   const columns: ColumnDef<Product>[] = [
     {
@@ -147,6 +149,7 @@ export function ProductsClient({ initialProducts }: { initialProducts: Product[]
 
   const handleAddProduct = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+    setFormError(null)
     const formData = new FormData(e.currentTarget)
     const result = await addProduct(formData)
     
@@ -155,12 +158,14 @@ export function ProductsClient({ initialProducts }: { initialProducts: Product[]
       router.refresh()
       toast.success("Product added successfully")
     } else {
+      setFormError(result.error || "Failed to add product")
       toast.error(result.error || "Failed to add product")
     }
   }
 
   const handleUpdateProduct = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+    setFormError(null)
     if (!selectedProduct) return
     
     const formData = new FormData(e.currentTarget)
@@ -172,6 +177,7 @@ export function ProductsClient({ initialProducts }: { initialProducts: Product[]
       router.refresh()
       toast.success("Product updated successfully")
     } else {
+      setFormError(result.error || "Failed to update product")
       toast.error(result.error || "Failed to update product")
     }
   }
@@ -257,7 +263,10 @@ export function ProductsClient({ initialProducts }: { initialProducts: Product[]
       />
 
       {/* Add Product Dialog */}
-      <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+      <Dialog open={isAddDialogOpen} onOpenChange={(open) => {
+        setIsAddDialogOpen(open)
+        if (!open) setFormError(null)
+      }}>
         <DialogContent className="max-w-2xl">
           <form onSubmit={handleAddProduct}>
             <DialogHeader>
@@ -267,6 +276,13 @@ export function ProductsClient({ initialProducts }: { initialProducts: Product[]
               </DialogDescription>
             </DialogHeader>
             <div className="grid gap-4 py-4">
+              {formError && (
+                <Alert variant="destructive">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertTitle>Error</AlertTitle>
+                  <AlertDescription>{formError}</AlertDescription>
+                </Alert>
+              )}
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="make">Make</Label>
@@ -322,7 +338,10 @@ export function ProductsClient({ initialProducts }: { initialProducts: Product[]
       </Dialog>
 
       {/* Edit Product Dialog */}
-      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+      <Dialog open={isEditDialogOpen} onOpenChange={(open) => {
+        setIsEditDialogOpen(open)
+        if (!open) setFormError(null)
+      }}>
         <DialogContent className="max-w-2xl">
           <form onSubmit={handleUpdateProduct}>
             <DialogHeader>
@@ -332,6 +351,13 @@ export function ProductsClient({ initialProducts }: { initialProducts: Product[]
               </DialogDescription>
             </DialogHeader>
             <div className="grid gap-4 py-4">
+              {formError && (
+                <Alert variant="destructive">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertTitle>Error</AlertTitle>
+                  <AlertDescription>{formError}</AlertDescription>
+                </Alert>
+              )}
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="edit-make">Make</Label>
