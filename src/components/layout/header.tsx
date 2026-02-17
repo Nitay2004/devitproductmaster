@@ -30,7 +30,6 @@ export function Header({ onMenuClick }: HeaderProps) {
         {/* Logo Section */}
         <div className="flex items-center gap-2 shrink-0">
           <Link href="/" className="flex items-center gap-2 font-bold text-lg md:text-xl text-primary hover:opacity-80 transition-opacity">
-            <span className="text-xl md:text-2xl">⚡</span> 
             <span className="hidden sm:inline bg-clip-text text-transparent bg-linear-to-r from-blue-600 to-indigo-600">ProductMaster</span>
           </Link>
         </div>
