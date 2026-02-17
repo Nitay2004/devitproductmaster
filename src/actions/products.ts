@@ -2,7 +2,7 @@
 
 import { prisma } from "@/lib/prisma"
 import { revalidatePath } from "next/cache"
-import { validateName, validatePrice } from "@/lib/validation"
+import { schemaProduct } from "@/lib/validation"
 
 export async function getProducts() {
   try {
@@ -14,6 +14,9 @@ export async function getProducts() {
         cpu: true,
         generation: true,
         productName: true,
+        ram: true,
+        ssd: true,
+        hdd: true,
         salePrice: true,
         createdAt: true,
         updatedAt: true,
@@ -28,6 +31,9 @@ export async function getProducts() {
       cpu: product.cpu,
       generation: product.generation,
       productName: product.productName,
+      ram: product.ram,
+      ssd: product.ssd,
+      hdd: product.hdd,
       salePrice: product.salePrice.toNumber(),
       createdAt: product.createdAt.toISOString(),
       updatedAt: product.updatedAt.toISOString(),
@@ -41,22 +47,28 @@ export async function getProducts() {
 
 export async function addProduct(formData: FormData) {
   try {
-    const make = formData.get("make") as string
-    const modelNumber = formData.get("modelNumber") as string
-    const cpu = formData.get("cpu") as string
-    const generation = formData.get("generation") as string
-    const productName = formData.get("productName") as string
-    const salePrice = parseFloat(formData.get("salePrice") as string)
+    const rawData = {
+      make: formData.get("make"),
+      modelNumber: formData.get("modelNumber"),
+      cpu: formData.get("cpu"),
+      generation: formData.get("generation"),
+      productName: formData.get("productName"),
+      ram: formData.get("ram"),
+      ssd: formData.get("ssd"),
+      hdd: formData.get("hdd"),
+      salePrice: formData.get("salePrice"),
+    }
 
-    // Validation
-    const makeVal = validateName(make)
-    if (!makeVal.isValid) return { success: false, error: `Make: ${makeVal.error}` }
-    
-    const modelVal = validateName(modelNumber)
-    if (!modelVal.isValid) return { success: false, error: `Model: ${modelVal.error}` }
+    const validatedFields = schemaProduct.safeParse(rawData)
 
-    const priceVal = validatePrice(salePrice, "Sale Price")
-    if (!priceVal.isValid) return { success: false, error: priceVal.error }
+    if (!validatedFields.success) {
+      return { 
+        success: false, 
+        error: validatedFields.error.errors[0].message 
+      }
+    }
+
+    const { make, modelNumber, cpu, generation, productName, ram, ssd, hdd, salePrice } = validatedFields.data
 
     const product = await prisma.product.create({
       data: {
@@ -65,6 +77,9 @@ export async function addProduct(formData: FormData) {
         cpu: cpu || null,
         generation: generation || null,
         productName: productName || null,
+        ram: ram || null,
+        ssd: ssd || null,
+        hdd: hdd || null,
         salePrice,
       },
     })
@@ -80,22 +95,28 @@ export async function addProduct(formData: FormData) {
 
 export async function updateProduct(id: string, formData: FormData) {
   try {
-    const make = formData.get("make") as string
-    const modelNumber = formData.get("modelNumber") as string
-    const cpu = formData.get("cpu") as string
-    const generation = formData.get("generation") as string
-    const productName = formData.get("productName") as string
-    const salePrice = parseFloat(formData.get("salePrice") as string)
+    const rawData = {
+      make: formData.get("make"),
+      modelNumber: formData.get("modelNumber"),
+      cpu: formData.get("cpu"),
+      generation: formData.get("generation"),
+      productName: formData.get("productName"),
+      ram: formData.get("ram"),
+      ssd: formData.get("ssd"),
+      hdd: formData.get("hdd"),
+      salePrice: formData.get("salePrice"),
+    }
 
-    // Validation
-    const makeVal = validateName(make)
-    if (!makeVal.isValid) return { success: false, error: `Make: ${makeVal.error}` }
-    
-    const modelVal = validateName(modelNumber)
-    if (!modelVal.isValid) return { success: false, error: `Model: ${modelVal.error}` }
+    const validatedFields = schemaProduct.safeParse(rawData)
 
-    const priceVal = validatePrice(salePrice, "Sale Price")
-    if (!priceVal.isValid) return { success: false, error: priceVal.error }
+    if (!validatedFields.success) {
+      return { 
+        success: false, 
+        error: validatedFields.error.errors[0].message 
+      }
+    }
+
+    const { make, modelNumber, cpu, generation, productName, ram, ssd, hdd, salePrice } = validatedFields.data
 
     const product = await prisma.product.update({
       where: { id },
@@ -105,6 +126,9 @@ export async function updateProduct(id: string, formData: FormData) {
         cpu: cpu || null,
         generation: generation || null,
         productName: productName || null,
+        ram: ram || null,
+        ssd: ssd || null,
+        hdd: hdd || null,
         salePrice,
       },
     })
