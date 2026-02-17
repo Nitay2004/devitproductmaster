@@ -6,9 +6,9 @@ export const schemaProduct = z.object({
   cpu: z.string().optional(),
   generation: z.string().optional(),
   productName: z.string().optional(),
-  ram: z.string().optional(),
-  ssd: z.string().optional(),
-  hdd: z.string().optional(),
+  ram: z.string().optional().refine(val => !val || !val.trim().startsWith("-"), { message: "RAM cannot be negative" }),
+  ssd: z.string().optional().refine(val => !val || !val.trim().startsWith("-"), { message: "SSD cannot be negative" }),
+  hdd: z.string().optional().refine(val => !val || !val.trim().startsWith("-"), { message: "HDD cannot be negative" }),
   salePrice: z.coerce.number().min(0, "Sale price must be 0 or greater"),
 })
 
