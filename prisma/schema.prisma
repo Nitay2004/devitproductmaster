@@ -15,6 +15,9 @@ model Product {
   cpu         String?
   generation  String?
   productName String?
+  ram         String?
+  ssd         String?
+  hdd         String?
   salePrice   Decimal  @db.Decimal(10, 2)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt

@@ -1,31 +1,33 @@
-export const validateName = (name: string | null): { isValid: boolean; error?: string } => {
-  if (!name || name.trim().length === 0) {
-    return { isValid: false, error: "Name is required" }
-  }
-  
-  // Custom check: should not be only numbers
-  const onlyNumbers = /^\d+$/.test(name.trim())
-  if (onlyNumbers) {
-    return { isValid: false, error: `"${name}" is not a valid name (cannot be only numbers)` }
-  }
-  
-  if (name.length < 2) {
-    return { isValid: false, error: "Name must be at least 2 characters long" }
-  }
+import { z } from "zod"
 
-  return { isValid: true }
-}
+export const schemaProduct = z.object({
+  make: z.string().min(2, "Make must be at least 2 characters"),
+  modelNumber: z.string().min(2, "Model Number must be at least 2 characters"),
+  cpu: z.string().optional(),
+  generation: z.string().optional(),
+  productName: z.string().optional(),
+  ram: z.string().optional(),
+  ssd: z.string().optional(),
+  hdd: z.string().optional(),
+  salePrice: z.coerce.number().min(0, "Sale price must be 0 or greater"),
+})
 
-export const validatePrice = (price: number | null, fieldName: string): { isValid: boolean; error?: string } => {
-  if (price === null) return { isValid: true } // Optional fields are handled elsewhere
-  
-  if (isNaN(price)) {
-    return { isValid: false, error: `${fieldName} must be a valid number` }
-  }
-  
-  if (price < 0) {
-    return { isValid: false, error: `${fieldName} cannot be negative` }
-  }
-  
-  return { isValid: true }
-}
+export const schemaSparePart = z.object({
+  make: z.string().min(2, "Make must be at least 2 characters"),
+  modelNumber: z.string().min(2, "Model Number must be at least 2 characters"),
+  cpu: z.string().optional(),
+  generation: z.string().optional(),
+  productName: z.string().optional(),
+  frontPanel: z.coerce.number().optional(),
+  panel: z.coerce.number().optional(),
+  screenNonTouch: z.coerce.number().optional(),
+  screenTouch: z.coerce.number().optional(),
+  hinge: z.coerce.number().optional(),
+  touchPad: z.coerce.number().optional(),
+  base: z.coerce.number().optional(),
+  keyboard: z.coerce.number().optional(),
+  battery: z.coerce.number().optional(),
+})
+
+export type ProductFormValues = z.infer<typeof schemaProduct>
+export type SparePartFormValues = z.infer<typeof schemaSparePart>

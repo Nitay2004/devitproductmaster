@@ -31,6 +31,9 @@ export type Product = {
   cpu: string | null
   generation: string | null
   productName: string | null
+  ram: string | null
+  ssd: string | null
+  hdd: string | null
   salePrice: number
 }
 
@@ -94,6 +97,18 @@ export function ProductsClient({ initialProducts }: { initialProducts: Product[]
     {
         accessorKey: "productName",
         header: "Product Name",
+    },
+    {
+        accessorKey: "ram",
+        header: "RAM",
+    },
+    {
+        accessorKey: "ssd",
+        header: "SSD",
+    },
+    {
+        accessorKey: "hdd",
+        header: "HDD",
     },
     {
         accessorKey: "salePrice",
@@ -203,6 +218,9 @@ export function ProductsClient({ initialProducts }: { initialProducts: Product[]
         "CPU": p.cpu || "-",
         "Generation": p.generation || "-",
         "Product Name": p.productName || "-",
+        "RAM": p.ram || "-",
+        "SSD": p.ssd || "-",
+        "HDD": p.hdd || "-",
         "Sale Price": p.salePrice
       }));
 
@@ -233,7 +251,7 @@ export function ProductsClient({ initialProducts }: { initialProducts: Product[]
           <BulkUploadDialog 
             title="Products" 
             onUpload={bulkUploadProducts} 
-            templateFields={["make", "modelNumber", "cpu", "generation", "productName", "salePrice"]}
+            templateFields={["make", "modelNumber", "cpu", "generation", "productName", "ram", "ssd", "hdd", "salePrice"]}
           />
         }
       />
@@ -274,6 +292,22 @@ export function ProductsClient({ initialProducts }: { initialProducts: Product[]
                   <Label htmlFor="productName">Product Name</Label>
                   <Input id="productName" name="productName" placeholder="e.g. Laptop" />
                 </div>
+                <div className="space-y-2">
+                  <Label htmlFor="ram">RAM</Label>
+                  <Input id="ram" name="ram" placeholder="e.g. 16GB" />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="ssd">SSD</Label>
+                  <Input id="ssd" name="ssd" placeholder="e.g. 512GB" />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="hdd">HDD</Label>
+                  <Input id="hdd" name="hdd" placeholder="e.g. 1TB" />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="salePrice">Sale Price (₹)</Label>
                   <Input id="salePrice" name="salePrice" type="number" step="0.01" min="0" required />
@@ -323,6 +357,22 @@ export function ProductsClient({ initialProducts }: { initialProducts: Product[]
                   <Label htmlFor="edit-productName">Product Name</Label>
                   <Input id="edit-productName" name="productName" defaultValue={selectedProduct?.productName || ""} placeholder="e.g. Laptop" />
                 </div>
+                <div className="space-y-2">
+                   <Label htmlFor="edit-ram">RAM</Label>
+                   <Input id="edit-ram" name="ram" defaultValue={selectedProduct?.ram || ""} placeholder="e.g. 16GB" />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                   <Label htmlFor="edit-ssd">SSD</Label>
+                   <Input id="edit-ssd" name="ssd" defaultValue={selectedProduct?.ssd || ""} placeholder="e.g. 512GB" />
+                </div>
+                <div className="space-y-2">
+                   <Label htmlFor="edit-hdd">HDD</Label>
+                   <Input id="edit-hdd" name="hdd" defaultValue={selectedProduct?.hdd || ""} placeholder="e.g. 1TB" />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="edit-salePrice">Sale Price (₹)</Label>
                   <Input id="edit-salePrice" name="salePrice" type="number" step="0.01" min="0" defaultValue={selectedProduct?.salePrice} required />
