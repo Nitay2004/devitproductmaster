@@ -8,6 +8,7 @@ import {
   Home,
   Package,
   Wrench,
+  Calculator,
   LogOut,
 } from "lucide-react"
 import { logout } from "@/actions/auth"
@@ -28,6 +29,7 @@ export function Sidebar({ className, isCollapsed, onMouseEnter, onMouseLeave }: 
     { name: "Home", icon: Home, href: "/" },
     { name: "Products", icon: Package, href: "/products" },
     { name: "Spare Parts", icon: Wrench, href: "/spare-parts" },
+    { name: "Price Calculator", icon: Calculator, href: "/price-calculator" },
   ]
 
   // Animation variants for the sidebar container

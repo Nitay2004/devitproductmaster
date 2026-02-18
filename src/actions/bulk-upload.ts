@@ -21,12 +21,25 @@ function findValue(item: RawExcelData, target: string) {
     modelNumber: ['model', 'modelno', 'modelnumber', 'sku', 'partnumber'],
     productName: ['name', 'description', 'title', 'product'],
     salePrice: ['price', 'mrp', 'cost', 'sellingprice', 'rate'],
+    frontPanel: ['frontpanel(bazel)', 'frontpanelbazel', 'bazel', 'frontpanel'],
+    panel: ['panel'],
+    screenNonTouch: ['screennontouch', 'screen-nontouch', 'screen-non-touch', 'displaynontouch', 'screen'],
+    screenTouch: ['screentouch', 'screen-touch', 'displaytouch'],
+    hinge: ['hinge'],
+    touchPad: ['touchpad', 'touchpad', 'touch pad'],
+    base: ['base'],
+    keyboard: ['keyboard'],
+    battery: ['battery', 'batt'],
+    ram: ['ram', 'memory'],
+    hdd: ['hdd', 'harddrive'],
+    ssd: ['ssd', 'solidstatedrive'],
   };
 
   if (aliases[target]) {
     for (const key in item) {
-      const k = key.toLowerCase().replace(/\s+/g, '');
-      if (aliases[target].includes(k)) return item[key];
+      const k = key.toLowerCase().replace(/\s+/g, '').replace(/[-_.]/g, '');
+      const normalizedTargetAlts = aliases[target].map(a => a.toLowerCase().replace(/\s+/g, '').replace(/[-_.]/g, ''));
+      if (normalizedTargetAlts.includes(k)) return item[key];
     }
   }
 
@@ -36,20 +49,23 @@ function findValue(item: RawExcelData, target: string) {
 export async function bulkUploadProducts(data: RawExcelData[]) {
   try {
     const formattedData = data.map(item => {
-      const make = findValue(item, 'make');
-      const modelNumber = findValue(item, 'modelNumber');
-      const cpu = findValue(item, 'cpu');
-      const generation = findValue(item, 'generation');
-      const productName = findValue(item, 'productName');
-      const salePrice = findValue(item, 'salePrice');
+      const getNum = (key: string) => {
+        const val = findValue(item, key);
+        if (val === undefined || val === null || val === "") return 0;
+        const num = parseFloat(String(val));
+        return isNaN(num) ? 0 : num;
+      };
 
       return {
-        make: String(make || ""),
-        modelNumber: String(modelNumber || ""),
-        cpu: cpu ? String(cpu) : null,
-        generation: generation ? String(generation) : null,
-        productName: productName ? String(productName) : "Laptop",
-        salePrice: parseFloat(String(salePrice || 0)),
+        make: String(findValue(item, 'make') || ""),
+        modelNumber: String(findValue(item, 'modelNumber') || ""),
+        cpu: findValue(item, 'cpu') ? String(findValue(item, 'cpu')) : null,
+        generation: findValue(item, 'generation') ? String(findValue(item, 'generation')) : null,
+        productName: findValue(item, 'productName') ? String(findValue(item, 'productName')) : "Laptop",
+        ram: findValue(item, 'ram') ? String(findValue(item, 'ram')) : null,
+        ssd: findValue(item, 'ssd') ? String(findValue(item, 'ssd')) : null,
+        hdd: findValue(item, 'hdd') ? String(findValue(item, 'hdd')) : null,
+        salePrice: getNum('salePrice'),
       };
     }).filter(item => item.make && item.modelNumber);
 
@@ -59,7 +75,7 @@ export async function bulkUploadProducts(data: RawExcelData[]) {
 
     const result = await prisma.product.createMany({
       data: formattedData,
-      skipDuplicates: true
+      skipDuplicates: false
     })
 
     revalidatePath("/products")
@@ -82,26 +98,32 @@ export async function bulkUploadSpareParts(data: RawExcelData[]) {
   try {
     const formattedData = data.map(item => {
       const make = findValue(item, 'make');
-      const modelNumber = findValue(item, 'modelNumber');
       const cpu = findValue(item, 'cpu');
       const generation = findValue(item, 'generation');
       const productName = findValue(item, 'productName');
       
+      const getNum = (key: string) => {
+        const val = findValue(item, key);
+        if (val === undefined || val === null || val === "") return null;
+        const num = parseFloat(String(val));
+        return isNaN(num) ? null : num;
+      };
+
       return {
-        make: String(make || ""),
-        modelNumber: String(modelNumber || ""),
+        make: String(findValue(item, 'make') || ""),
+        modelNumber: String(findValue(item, 'modelNumber') || ""),
         cpu: cpu ? String(cpu) : null,
         generation: generation ? String(generation) : null,
         productName: productName ? String(productName) : "Laptop",
-        frontPanel: findValue(item, 'frontPanel') ? parseFloat(String(findValue(item, 'frontPanel'))) : null,
-        panel: findValue(item, 'panel') ? parseFloat(String(findValue(item, 'panel'))) : null,
-        screenNonTouch: findValue(item, 'screenNonTouch') ? parseFloat(String(findValue(item, 'screenNonTouch'))) : null,
-        screenTouch: findValue(item, 'screenTouch') ? parseFloat(String(findValue(item, 'screenTouch'))) : null,
-        hinge: findValue(item, 'hinge') ? parseFloat(String(findValue(item, 'hinge'))) : null,
-        touchPad: findValue(item, 'touchPad') ? parseFloat(String(findValue(item, 'touchPad'))) : null,
-        base: findValue(item, 'base') ? parseFloat(String(findValue(item, 'base'))) : null,
-        keyboard: findValue(item, 'keyboard') ? parseFloat(String(findValue(item, 'keyboard'))) : null,
-        battery: findValue(item, 'battery') ? parseFloat(String(findValue(item, 'battery'))) : null,
+        frontPanel: getNum('frontPanel'),
+        panel: getNum('panel'),
+        screenNonTouch: getNum('screenNonTouch'),
+        screenTouch: getNum('screenTouch'),
+        hinge: getNum('hinge'),
+        touchPad: getNum('touchPad'),
+        base: getNum('base'),
+        keyboard: getNum('keyboard'),
+        battery: getNum('battery'),
       };
     }).filter(item => item.make && item.modelNumber);
 
@@ -111,7 +133,7 @@ export async function bulkUploadSpareParts(data: RawExcelData[]) {
 
     const result = await prisma.sparePart.createMany({
       data: formattedData,
-      skipDuplicates: true
+      skipDuplicates: false
     })
 
     revalidatePath("/spare-parts")

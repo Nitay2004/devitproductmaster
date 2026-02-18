@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Pencil, Trash2, ArrowUpDown, AlertCircle } from "lucide-react"
@@ -48,6 +48,49 @@ export function ProductsClient({ initialProducts }: { initialProducts: Product[]
   const [selectedProductsForBulk, setSelectedProductsForBulk] = useState<Product[]>([])
   const [isDeleting, setIsDeleting] = useState(false)
   const [formError, setFormError] = useState<string | null>(null)
+
+  // State for Add Product Form
+  const [addFormData, setAddFormData] = useState({
+    make: "",
+    modelNumber: "",
+    cpu: "",
+    generation: "",
+  })
+
+  // State for Edit Product Form
+  const [editFormData, setEditFormData] = useState({
+    make: "",
+    modelNumber: "",
+    cpu: "",
+    generation: "",
+  })
+
+  // Derived Product Name for Add Form
+  const addProductName = [
+    addFormData.make,
+    addFormData.modelNumber,
+    addFormData.cpu,
+    addFormData.generation
+  ].filter(Boolean).join("/")
+
+  // Derived Product Name for Edit Form
+  const editProductName = [
+    editFormData.make,
+    editFormData.modelNumber,
+    editFormData.cpu,
+    editFormData.generation
+  ].filter(Boolean).join("/")
+
+  useEffect(() => {
+    if (selectedProduct) {
+      setEditFormData({
+        make: selectedProduct.make,
+        modelNumber: selectedProduct.modelNumber,
+        cpu: selectedProduct.cpu || "",
+        generation: selectedProduct.generation || "",
+      })
+    }
+  }, [selectedProduct])
 
   const columns: ColumnDef<Product>[] = [
     {
@@ -147,14 +190,32 @@ export function ProductsClient({ initialProducts }: { initialProducts: Product[]
     },
   ]
 
+  const handleAddChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setAddFormData({
+      ...addFormData,
+      [e.target.name]: e.target.value
+    })
+  }
+
+  const handleEditChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEditFormData({
+      ...editFormData,
+      [e.target.name]: e.target.value
+    })
+  }
+
   const handleAddProduct = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setFormError(null)
     const formData = new FormData(e.currentTarget)
+    // Ensure product name is set from our derived state
+    formData.set("productName", addProductName)
+    
     const result = await addProduct(formData)
     
     if (result.success) {
       setIsAddDialogOpen(false)
+      setAddFormData({ make: "", modelNumber: "", cpu: "", generation: "" }) // Reset form
       router.refresh()
       toast.success("Product added successfully")
     } else {
@@ -169,6 +230,9 @@ export function ProductsClient({ initialProducts }: { initialProducts: Product[]
     if (!selectedProduct) return
     
     const formData = new FormData(e.currentTarget)
+     // Ensure product name is set from our derived state
+    formData.set("productName", editProductName)
+    
     const result = await updateProduct(selectedProduct.id, formData)
     
     if (result.success) {
@@ -286,27 +350,64 @@ export function ProductsClient({ initialProducts }: { initialProducts: Product[]
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="make">Make</Label>
-                  <Input id="make" name="make" placeholder="e.g. Dell" required pattern="^(?!\d+$).+" title="Make cannot be only numbers" />
+                  <Input 
+                    id="make" 
+                    name="make" 
+                    placeholder="e.g. Dell" 
+                    required 
+                    pattern="^(?!\d+$).+" 
+                    title="Make cannot be only numbers"
+                    value={addFormData.make}
+                    onChange={handleAddChange}
+                  />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="modelNumber">Model Number</Label>
-                  <Input id="modelNumber" name="modelNumber" placeholder="e.g. Latitude 5420" required pattern="^(?!\d+$).+" title="Model Number cannot be only numbers" />
+                  <Input 
+                    id="modelNumber" 
+                    name="modelNumber" 
+                    placeholder="e.g. Latitude 5420" 
+                    required 
+                    pattern="^(?!\d+$).+" 
+                    title="Model Number cannot be only numbers"
+                    value={addFormData.modelNumber}
+                    onChange={handleAddChange}
+                  />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="cpu">CPU</Label>
-                  <Input id="cpu" name="cpu" placeholder="e.g. i5-1145G7" />
+                  <Input 
+                    id="cpu" 
+                    name="cpu" 
+                    placeholder="e.g. i5-1145G7"
+                    value={addFormData.cpu}
+                    onChange={handleAddChange}
+                  />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="generation">Generation</Label>
-                  <Input id="generation" name="generation" placeholder="e.g. 11th Gen" />
+                  <Input 
+                    id="generation" 
+                    name="generation" 
+                    placeholder="e.g. 11th Gen"
+                    value={addFormData.generation}
+                    onChange={handleAddChange}
+                  />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="productName">Product Name</Label>
-                  <Input id="productName" name="productName" placeholder="e.g. Laptop" />
+                  <Input 
+                    id="productName" 
+                    name="productName" 
+                    placeholder="Auto-generated" 
+                    value={addProductName}
+                    readOnly
+                    className="bg-muted"
+                  />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="ram">RAM</Label>
@@ -361,27 +462,64 @@ export function ProductsClient({ initialProducts }: { initialProducts: Product[]
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="edit-make">Make</Label>
-                  <Input id="edit-make" name="make" defaultValue={selectedProduct?.make} placeholder="e.g. Dell" required pattern="^(?!\d+$).+" title="Make cannot be only numbers" />
+                  <Input 
+                    id="edit-make" 
+                    name="make" 
+                    value={editFormData.make}
+                    onChange={handleEditChange}
+                    placeholder="e.g. Dell" 
+                    required 
+                    pattern="^(?!\d+$).+" 
+                    title="Make cannot be only numbers" 
+                  />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="edit-modelNumber">Model Number</Label>
-                  <Input id="edit-modelNumber" name="modelNumber" defaultValue={selectedProduct?.modelNumber} placeholder="e.g. Latitude 5420" required pattern="^(?!\d+$).+" title="Model Number cannot be only numbers" />
+                  <Input 
+                    id="edit-modelNumber" 
+                    name="modelNumber" 
+                    value={editFormData.modelNumber}
+                    onChange={handleEditChange}
+                    placeholder="e.g. Latitude 5420" 
+                    required 
+                    pattern="^(?!\d+$).+" 
+                    title="Model Number cannot be only numbers" 
+                  />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="edit-cpu">CPU</Label>
-                  <Input id="edit-cpu" name="cpu" defaultValue={selectedProduct?.cpu || ""} placeholder="e.g. i5-1145G7" />
+                  <Input 
+                    id="edit-cpu" 
+                    name="cpu" 
+                    value={editFormData.cpu}
+                    onChange={handleEditChange}
+                    placeholder="e.g. i5-1145G7" 
+                  />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="edit-generation">Generation</Label>
-                  <Input id="edit-generation" name="generation" defaultValue={selectedProduct?.generation || ""} placeholder="e.g. 11th Gen" />
+                  <Input 
+                    id="edit-generation" 
+                    name="generation" 
+                    value={editFormData.generation}
+                    onChange={handleEditChange}
+                    placeholder="e.g. 11th Gen" 
+                  />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="edit-productName">Product Name</Label>
-                  <Input id="edit-productName" name="productName" defaultValue={selectedProduct?.productName || ""} placeholder="e.g. Laptop" />
+                  <Input 
+                    id="edit-productName" 
+                    name="productName" 
+                    value={editProductName}
+                    readOnly
+                    className="bg-muted"
+                    placeholder="Auto-generated" 
+                  />
                 </div>
                 <div className="space-y-2">
                    <Label htmlFor="edit-ram">RAM</Label>

@@ -170,8 +170,9 @@ export function BulkUploadDialog({ onUpload, title, templateFields }: BulkUpload
           </div>
 
           {/* Right Content Area */}
-          <div className="flex-1 flex flex-col bg-white">
-            <div className="p-8 pb-4">
+          <div className="flex-1 grid grid-cols-1 grid-rows-[auto_1fr_auto] bg-white overflow-hidden min-h-0 min-w-0 h-full max-h-full">
+            {/* Header */}
+            <div className="p-8 pb-4 shrink-0 border-b border-slate-100">
               <DialogHeader>
                 <DialogTitle className="text-xl font-bold text-slate-900">
                   Import {title}
@@ -182,8 +183,9 @@ export function BulkUploadDialog({ onUpload, title, templateFields }: BulkUpload
               </DialogHeader>
             </div>
 
-            <div className="flex-1 overflow-y-auto px-8 py-4 custom-scrollbar">
-              <div className="space-y-6">
+            {/* Scrollable Content */}
+            <div className="overflow-y-auto px-8 py-6 custom-scrollbar min-h-0 w-full">
+              <div className="space-y-8">
                 {/* Step Content: Configuration */}
                 {currentStep === 0 && (
                   <div className="bg-slate-50 rounded-xl p-6 border border-slate-200 space-y-4">
@@ -248,48 +250,39 @@ export function BulkUploadDialog({ onUpload, title, templateFields }: BulkUpload
 
                     <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
                       <div className="overflow-x-auto">
-                        <table className="w-full text-left">
-                          <thead className="bg-slate-50 border-b border-slate-200">
+                        <table className="w-full text-left border-collapse min-w-max">
+                          <thead className="bg-slate-50 border-b border-slate-200 sticky top-0 z-10">
                             <tr>
-                              <th className="px-4 py-2 text-[10px] text-slate-500 font-bold uppercase tracking-wider">Status</th>
+                              <th className="px-6 py-3 text-[10px] text-slate-500 font-bold uppercase tracking-wider whitespace-nowrap">Status</th>
                               {Object.keys(preview![0]).map((key) => (
-                                <th key={key} className="px-4 py-2 text-[10px] text-slate-500 font-bold uppercase tracking-wider">{key}</th>
+                                <th key={key} className="px-6 py-3 text-[10px] text-slate-500 font-bold uppercase tracking-wider whitespace-nowrap">{key}</th>
                               ))}
                             </tr>
                           </thead>
-                          <tbody className="divide-y divide-slate-100 text-xs">
+                          <tbody className="divide-y divide-slate-100 text-xs text-slate-600">
                             {preview!.map((row, i) => {
+                              const keys = Object.keys(preview![0]);
                               const findValue = (item: Record<string, unknown>, target: string) => {
                                 const normalizedTarget = target.toLowerCase().replace(/\s+/g, '');
                                 for (const key in item) {
                                   if (key.toLowerCase().replace(/\s+/g, '') === normalizedTarget) return item[key];
                                 }
-                                // Basic aliases for client-side preview
-                                const aliases: Record<string, string[]> = {
-                                  make: ['brand', 'manufacturer'],
-                                  modelnumber: ['model', 'sku', 'modelno']
-                                };
-                                if (aliases[normalizedTarget]) {
-                                  for (const key in item) {
-                                    if (aliases[normalizedTarget].includes(key.toLowerCase().replace(/\s+/g, ''))) return item[key];
-                                  }
-                                }
                                 return undefined;
                               };
 
-                              const isValid = !!(findValue(row, 'make') && findValue(row, 'modelNumber'));
+                              const isValid = !!findValue(row, 'productName');
 
                               return (
                                 <tr key={i} className="hover:bg-blue-50/30 transition-colors">
-                                  <td className="px-4 py-2 border-r border-slate-100 text-[10px] font-bold uppercase transition-colors">
+                                  <td className="px-6 py-3 border-r border-slate-100 text-[10px] font-bold uppercase whitespace-nowrap sticky left-0 bg-white z-10">
                                     {isValid ? (
-                                      <span className="text-green-600">VALID</span>
+                                      <span className="text-green-600 font-bold">VALID</span>
                                     ) : (
-                                      <span className="text-red-500">MISSING INFO</span>
+                                      <span className="text-red-500 font-bold">MISSING DATA</span>
                                     )}
                                   </td>
-                                  {Object.values(row).map((val, j) => (
-                                    <td key={j} className="px-4 py-2 text-slate-600 truncate max-w-[120px]">{String(val)}</td>
+                                  {keys.map((key, j) => (
+                                    <td key={j} className="px-6 py-3 whitespace-nowrap">{String(row[key] ?? "")}</td>
                                   ))}
                                 </tr>
                               );
@@ -298,7 +291,7 @@ export function BulkUploadDialog({ onUpload, title, templateFields }: BulkUpload
                         </table>
                       </div>
                       <div className="px-4 py-2 bg-slate-50 border-t border-slate-200">
-                         <p className="text-[10px] text-slate-400 font-bold uppercase">Showing 5 reference rows</p>
+                         <p className="text-[10px] text-slate-400 font-bold uppercase">Showing {preview?.length} reference rows</p>
                       </div>
                     </div>
                   </div>
@@ -336,7 +329,7 @@ export function BulkUploadDialog({ onUpload, title, templateFields }: BulkUpload
             </div>
 
             {/* Footer Actions */}
-            <div className="px-8 py-6 border-t border-slate-200 bg-white flex justify-end gap-3">
+            <div className="px-8 py-6 border-t border-slate-200 bg-white flex justify-end gap-3 shrink-0">
               <Button 
                 variant="ghost" 
                 onClick={() => setIsOpen(false)} 

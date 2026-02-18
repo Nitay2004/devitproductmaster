@@ -11,7 +11,7 @@ datasource db {
 model Product {
   id          String   @id @default(uuid())
   make        String
-  modelNumber String   @unique
+  modelNumber String
   cpu         String?
   generation  String?
   productName String?
@@ -28,7 +28,7 @@ model Product {
 model SparePart {
   id             String   @id @default(uuid())
   make           String
-  modelNumber    String   @unique
+  modelNumber    String
   cpu            String?
   generation     String?
   productName    String?
@@ -56,4 +56,47 @@ model User {
   updatedAt DateTime @updatedAt
 
   @@map("users")
+}
+
+model PriceCalculator {
+  id                 String   @id @default(uuid())
+  productName        String
+  tagNo              String?
+  grade              String?
+  lotNumber          String?
+  make               String?
+  modelNumber        String?
+  cpu                String?
+  generation         String?
+  ramPresent         Boolean  @default(true)
+  ramCapacity        String?
+  hddPresent         Boolean  @default(true)
+  hdd                String?
+  ssdPresent         Boolean  @default(true)
+  ssd                String?
+  frontPanel         String   @default("ok")
+  frontPanelCost     Decimal  @default(0) @db.Decimal(10, 2)
+  panel              String   @default("ok")
+  panelCost          Decimal  @default(0) @db.Decimal(10, 2)
+  screenNonTouch     String   @default("ok")
+  screenNonTouchCost Decimal  @default(0) @db.Decimal(10, 2)
+  screenTouch        String   @default("ok")
+  screenTouchCost    Decimal  @default(0) @db.Decimal(10, 2)
+  hinge              String   @default("ok")
+  hingeCost          Decimal  @default(0) @db.Decimal(10, 2)
+  touchPad           String   @default("ok")
+  touchPadCost       Decimal  @default(0) @db.Decimal(10, 2)
+  base               String   @default("ok")
+  baseCost           Decimal  @default(0) @db.Decimal(10, 2)
+  keyboard           String   @default("ok")
+  keyboardCost       Decimal  @default(0) @db.Decimal(10, 2)
+  battery            String   @default("ok")
+  batteryCost        Decimal  @default(0) @db.Decimal(10, 2)
+  repairCost         Decimal  @db.Decimal(10, 2)
+  salePrice          Decimal  @db.Decimal(10, 2)
+  suggestedSalePrice Decimal  @db.Decimal(10, 2)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  @@map("price_calculations")
 }
