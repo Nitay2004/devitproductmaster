@@ -12,7 +12,7 @@ export async function getProductByProductName(productName: string) {
     let product = await prisma.product.findFirst({
       where: { productName: { equals: productName, mode: 'insensitive' } }
     })
-    
+
     // Fallback: parse productName and match fields case-insensitively
     if (!product) {
       const parts = productName.split("/").map(p => p.trim())
@@ -34,9 +34,9 @@ export async function getProductByProductName(productName: string) {
         success: true, 
         data: { 
           ...product, 
-          salePrice: Number(product.salePrice),
-          createdAt: product.createdAt.toISOString(),
-          updatedAt: product.updatedAt.toISOString(),
+          salePrice: Number((product as any).salePrice),
+          createdAt: product.createdAt instanceof Date ? product.createdAt.toISOString() : product.createdAt,
+          updatedAt: product.updatedAt instanceof Date ? product.updatedAt.toISOString() : product.updatedAt,
         } 
       }
     }
@@ -73,15 +73,15 @@ export async function getSparePartByProductName(productName: string) {
       return {
         success: true,
         data: {
-          frontPanel: sparePart.frontPanel?.toNumber() || 0,
-          panel: sparePart.panel?.toNumber() || 0,
-          screenNonTouch: sparePart.screenNonTouch?.toNumber() || 0,
-          screenTouch: sparePart.screenTouch?.toNumber() || 0,
-          hinge: sparePart.hinge?.toNumber() || 0,
-          touchPad: sparePart.touchPad?.toNumber() || 0,
-          base: sparePart.base?.toNumber() || 0,
-          keyboard: sparePart.keyboard?.toNumber() || 0,
-          battery: sparePart.battery?.toNumber() || 0,
+          frontPanel: (sparePart.frontPanel as any)?.toNumber ? (sparePart.frontPanel as any).toNumber() : Number(sparePart.frontPanel || 0),
+          panel: (sparePart.panel as any)?.toNumber ? (sparePart.panel as any).toNumber() : Number(sparePart.panel || 0),
+          screenNonTouch: (sparePart.screenNonTouch as any)?.toNumber ? (sparePart.screenNonTouch as any).toNumber() : Number(sparePart.screenNonTouch || 0),
+          screenTouch: (sparePart.screenTouch as any)?.toNumber ? (sparePart.screenTouch as any).toNumber() : Number(sparePart.screenTouch || 0),
+          hinge: (sparePart.hinge as any)?.toNumber ? (sparePart.hinge as any).toNumber() : Number(sparePart.hinge || 0),
+          touchPad: (sparePart.touchPad as any)?.toNumber ? (sparePart.touchPad as any).toNumber() : Number(sparePart.touchPad || 0),
+          base: (sparePart.base as any)?.toNumber ? (sparePart.base as any).toNumber() : Number(sparePart.base || 0),
+          keyboard: (sparePart.keyboard as any)?.toNumber ? (sparePart.keyboard as any).toNumber() : Number(sparePart.keyboard || 0),
+          battery: (sparePart.battery as any)?.toNumber ? (sparePart.battery as any).toNumber() : Number(sparePart.battery || 0),
         },
       }
     }
@@ -104,9 +104,9 @@ export async function getProductByDetails(make: string, modelNumber: string, cpu
         success: true, 
         data: { 
           ...product, 
-          salePrice: Number(product.salePrice),
-          createdAt: product.createdAt.toISOString(),
-          updatedAt: product.updatedAt.toISOString(),
+          salePrice: Number((product as any).salePrice),
+          createdAt: product.createdAt instanceof Date ? product.createdAt.toISOString() : product.createdAt,
+          updatedAt: product.updatedAt instanceof Date ? product.updatedAt.toISOString() : product.updatedAt,
         } 
       }
     }
@@ -126,15 +126,15 @@ export async function getSparePartPrices(make: string, modelNumber: string, cpu?
       return {
         success: true,
         data: {
-          frontPanel: sparePart.frontPanel?.toNumber() || 0,
-          panel: sparePart.panel?.toNumber() || 0,
-          screenNonTouch: sparePart.screenNonTouch?.toNumber() || 0,
-          screenTouch: sparePart.screenTouch?.toNumber() || 0,
-          hinge: sparePart.hinge?.toNumber() || 0,
-          touchPad: sparePart.touchPad?.toNumber() || 0,
-          base: sparePart.base?.toNumber() || 0,
-          keyboard: sparePart.keyboard?.toNumber() || 0,
-          battery: sparePart.battery?.toNumber() || 0,
+          frontPanel: (sparePart.frontPanel as any)?.toNumber ? (sparePart.frontPanel as any).toNumber() : Number(sparePart.frontPanel || 0),
+          panel: (sparePart.panel as any)?.toNumber ? (sparePart.panel as any).toNumber() : Number(sparePart.panel || 0),
+          screenNonTouch: (sparePart.screenNonTouch as any)?.toNumber ? (sparePart.screenNonTouch as any).toNumber() : Number(sparePart.screenNonTouch || 0),
+          screenTouch: (sparePart.screenTouch as any)?.toNumber ? (sparePart.screenTouch as any).toNumber() : Number(sparePart.screenTouch || 0),
+          hinge: (sparePart.hinge as any)?.toNumber ? (sparePart.hinge as any).toNumber() : Number(sparePart.hinge || 0),
+          touchPad: (sparePart.touchPad as any)?.toNumber ? (sparePart.touchPad as any).toNumber() : Number(sparePart.touchPad || 0),
+          base: (sparePart.base as any)?.toNumber ? (sparePart.base as any).toNumber() : Number(sparePart.base || 0),
+          keyboard: (sparePart.keyboard as any)?.toNumber ? (sparePart.keyboard as any).toNumber() : Number(sparePart.keyboard || 0),
+          battery: (sparePart.battery as any)?.toNumber ? (sparePart.battery as any).toNumber() : Number(sparePart.battery || 0),
         },
       }
     }
@@ -184,6 +184,9 @@ function serializeCalc(c: any) {
     repairCost: Number(c.repairCost || 0),
     salePrice: Number(c.salePrice || 0),
     suggestedSalePrice: Number(c.suggestedSalePrice || 0),
+    excelRamCapacity: c.excelRamCapacity || null,
+    excelHdd: c.excelHdd || null,
+    excelSsd: c.excelSsd || null,
     createdAt: c.createdAt instanceof Date ? c.createdAt.toISOString() : c.createdAt,
     updatedAt: c.updatedAt instanceof Date ? c.updatedAt.toISOString() : c.updatedAt,
   }
@@ -191,7 +194,109 @@ function serializeCalc(c: any) {
 
 export async function getPriceCalculations() {
   try {
-    const calculations = await prisma.priceCalculator.findMany({ orderBy: { createdAt: "desc" } })
+    // Check whether excel columns exist in DB
+    let calculations: any[]
+    try {
+      const cols = await prisma.$queryRaw<Array<{ column_name: string }>>`
+        SELECT column_name FROM information_schema.columns
+        WHERE table_schema = 'public' AND table_name = 'price_calculations'
+        AND column_name IN ('excelRamCapacity','excelHdd','excelSsd')
+      `
+      const hasExcelCols = Array.isArray(cols) && cols.length > 0
+      if (hasExcelCols) {
+        calculations = await prisma.priceCalculator.findMany({ orderBy: { createdAt: "desc" } })
+      } else {
+        calculations = await prisma.priceCalculator.findMany({
+          orderBy: { createdAt: "desc" },
+          select: {
+            id: true,
+            productName: true,
+            tagNo: true,
+            grade: true,
+            lotNumber: true,
+            make: true,
+            modelNumber: true,
+            cpu: true,
+            generation: true,
+            ramPresent: true,
+            ramCapacity: true,
+            hddPresent: true,
+            hdd: true,
+            ssdPresent: true,
+            ssd: true,
+            frontPanel: true,
+            frontPanelCost: true,
+            panel: true,
+            panelCost: true,
+            screenNonTouch: true,
+            screenNonTouchCost: true,
+            screenTouch: true,
+            screenTouchCost: true,
+            hinge: true,
+            hingeCost: true,
+            touchPad: true,
+            touchPadCost: true,
+            base: true,
+            baseCost: true,
+            keyboard: true,
+            keyboardCost: true,
+            battery: true,
+            batteryCost: true,
+            repairCost: true,
+            salePrice: true,
+            suggestedSalePrice: true,
+            createdAt: true,
+            updatedAt: true,
+          },
+        })
+      }
+    } catch (qErr) {
+      console.warn('Column check failed, falling back to safe select:', qErr)
+      calculations = await prisma.priceCalculator.findMany({
+        orderBy: { createdAt: "desc" },
+        select: {
+          id: true,
+          productName: true,
+          tagNo: true,
+          grade: true,
+          lotNumber: true,
+          make: true,
+          modelNumber: true,
+          cpu: true,
+          generation: true,
+          ramPresent: true,
+          ramCapacity: true,
+          hddPresent: true,
+          hdd: true,
+          ssdPresent: true,
+          ssd: true,
+          frontPanel: true,
+          frontPanelCost: true,
+          panel: true,
+          panelCost: true,
+          screenNonTouch: true,
+          screenNonTouchCost: true,
+          screenTouch: true,
+          screenTouchCost: true,
+          hinge: true,
+          hingeCost: true,
+          touchPad: true,
+          touchPadCost: true,
+          base: true,
+          baseCost: true,
+          keyboard: true,
+          keyboardCost: true,
+          battery: true,
+          batteryCost: true,
+          repairCost: true,
+          salePrice: true,
+          suggestedSalePrice: true,
+          createdAt: true,
+          updatedAt: true,
+        },
+      })
+    }
+
     return {
       success: true,
       data: calculations.map(serializeCalc),
@@ -238,6 +343,9 @@ export type CalcData = {
   repairCost: number
   salePrice: number
   suggestedSalePrice: number
+  excelRamCapacity?: string | null
+  excelHdd?: string | null
+  excelSsd?: string | null
 }
 
 export async function addPriceCalculation(data: CalcData) {
@@ -312,7 +420,7 @@ function normalizeStatus(val: unknown): string {
 
 export async function bulkUploadPriceCalculations(data: RawExcelData[]) {
   try {
-    const results = []
+    const results: any[] = []
     for (const item of data) {
       const productName = String(findVal(item, "productName", "product name", "product") || "")
       if (!productName) continue
@@ -365,9 +473,15 @@ export async function bulkUploadPriceCalculations(data: RawExcelData[]) {
 
       const suggestedSalePrice = salePrice - repairCost
 
-      const rawRam = findVal(item, "ram", "ramCapacity", "ram capacity", "memory")
-      const rawHdd = findVal(item, "hdd", "harddrive", "hard drive")
-      const rawSsd = findVal(item, "ssd", "solidstatedrive", "solid state drive")
+      // Prefer capacity-specific columns from Excel (e.g. "RAM Capacity")
+      const rawRamCap = findVal(item, "ramCapacity", "ram capacity", "ramcap", "memory")
+      const rawRamPres = findVal(item, "ram", "ram present")
+
+      const rawHddCap = findVal(item, "hddCapacity", "hdd capacity", "hddcap", "harddrive", "hard drive")
+      const rawHddPres = findVal(item, "hdd", "hdd present")
+
+      const rawSsdCap = findVal(item, "ssdCapacity", "ssd capacity", "ssdcap", "solidstatedrive", "solid state drive")
+      const rawSsdPres = findVal(item, "ssd", "ssd present")
 
       const isPresent = (val: unknown) => {
         if (val === undefined || val === null || val === "") return false
@@ -384,12 +498,17 @@ export async function bulkUploadPriceCalculations(data: RawExcelData[]) {
         modelNumber: productResult?.modelNumber || String(findVal(item, "modelNumber", "model number", "model") || "") || null,
         cpu: productResult?.cpu || String(findVal(item, "cpu") || "") || null,
         generation: productResult?.generation || String(findVal(item, "generation", "gen") || "") || null,
-        ramPresent: productResult ? true : isPresent(rawRam),
-        ramCapacity: ramCapacity || (isPresent(rawRam) ? String(rawRam) : null),
-        hddPresent: productResult ? true : isPresent(rawHdd),
-        hdd: hdd || (isPresent(rawHdd) ? String(rawHdd) : null),
-        ssdPresent: productResult ? !!ssd : isPresent(rawSsd),
-        ssd: ssd || (isPresent(rawSsd) ? String(rawSsd) : null),
+        // Presence is decided only from Product Master values (PM)
+        ramPresent: !!productResult?.ram,
+        // `ramCapacity` shows PM value; `excelRamCapacity` shows the Excel provided capacity (if any)
+        ramCapacity: ramCapacity || null,
+        excelRamCapacity: isPresent(rawRamCap) ? String(rawRamCap) : null,
+        hddPresent: !!productResult?.hdd,
+        hdd: hdd || null,
+        excelHdd: isPresent(rawHddCap) ? String(rawHddCap) : null,
+        ssdPresent: !!productResult?.ssd,
+        ssd: ssd || null,
+        excelSsd: isPresent(rawSsdCap) ? String(rawSsdCap) : null,
         frontPanel,
         frontPanelCost,
         panel,
@@ -418,7 +537,26 @@ export async function bulkUploadPriceCalculations(data: RawExcelData[]) {
       return { success: false, error: "No valid data found. Ensure 'Product Name' column exists." }
     }
 
-    const result = await prisma.priceCalculator.createMany({ data: results, skipDuplicates: false })
+    // Before inserting, check if DB has excel* columns; if not, strip them
+    let hasExcelCols = false
+    try {
+      const cols = await prisma.$queryRaw<Array<{ column_name: string }>>`
+        SELECT column_name FROM information_schema.columns
+        WHERE table_schema = 'public' AND table_name = 'price_calculations'
+        AND column_name IN ('excelRamCapacity','excelHdd','excelSsd')
+      `
+      hasExcelCols = Array.isArray(cols) && cols.length > 0
+    } catch (e) {
+      hasExcelCols = false
+    }
+
+    const dbRows = results.map(r => {
+      if (hasExcelCols) return r
+      const { excelRamCapacity, excelHdd, excelSsd, ...rest } = r as any
+      return rest
+    })
+
+    const result = await prisma.priceCalculator.createMany({ data: dbRows, skipDuplicates: false })
     revalidatePath("/price-calculator")
     return { success: true, count: result.count }
   } catch (error) {

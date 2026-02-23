@@ -509,11 +509,14 @@ export function PriceCalculatorClient({ initialCalculations }: { initialCalculat
       "CPU": c.cpu || "-",
       "Generation": c.generation || "-",
       "RAM": c.ramPresent ? "Yes" : "No",
-      "RAM Capacity": c.ramCapacity || "-",
+      "RAM (Excel)": (c as any).excelRamCapacity || "-",
+      "RAM (PM)": c.ramCapacity || "-",
       "HDD": c.hddPresent ? "Yes" : "No",
-      "HDD Capacity": c.hdd || "-",
+      "HDD (Excel)": (c as any).excelHdd || "-",
+      "HDD (PM)": c.hdd || "-",
       "SSD": c.ssdPresent ? "Yes" : "No",
-      "SSD Capacity": c.ssd || "-",
+      "SSD (Excel)": (c as any).excelSsd || "-",
+      "SSD (PM)": c.ssd || "-",
       "Front Panel": c.frontPanelCost,
       "Panel": c.panelCost,
       "Screen Non-Touch": c.screenNonTouchCost,
@@ -563,36 +566,7 @@ export function PriceCalculatorClient({ initialCalculations }: { initialCalculat
     { accessorKey: "tagNo", header: "Tag No", cell: ({ row }) => row.getValue("tagNo") || "-" },
     { accessorKey: "grade", header: "Grade", cell: ({ row }) => row.getValue("grade") || "-" },
     { accessorKey: "lotNumber", header: "Lot No", cell: ({ row }) => row.getValue("lotNumber") || "-" },
-    {
-      accessorKey: "ramPresent",
-      header: "RAM",
-      cell: ({ row }) => row.original.ramPresent ? "Yes" : "No",
-    },
-    {
-      accessorKey: "ramCapacity",
-      header: "RAM Cap",
-      cell: ({ row }) => row.original.ramCapacity || "-",
-    },
-    {
-      accessorKey: "hddPresent",
-      header: "HDD",
-      cell: ({ row }) => row.original.hddPresent ? "Yes" : "No",
-    },
-    {
-      accessorKey: "hdd",
-      header: "HDD Cap",
-      cell: ({ row }) => row.original.hdd || "-",
-    },
-    {
-      accessorKey: "ssdPresent",
-      header: "SSD",
-      cell: ({ row }) => row.original.ssdPresent ? "Yes" : "No",
-    },
-    {
-      accessorKey: "ssd",
-      header: "SSD Cap",
-      cell: ({ row }) => row.original.ssd || "-",
-    },
+    // NOTE: RAM/HDD/SSD columns moved to after Repair Cost (Excel vs Product Master values)
     { 
       accessorKey: "frontPanelCost", 
       header: "Front Panel", 
@@ -675,6 +649,52 @@ export function PriceCalculatorClient({ initialCalculations }: { initialCalculat
       )
     },
     { accessorKey: "repairCost", header: "Repair Cost", cell: ({ row }) => `₹${(row.getValue("repairCost") as number).toLocaleString()}` },
+    // RAM/HDD/SSD presence and capacities: Excel value then Product Master (PM) value
+    {
+      id: "ramValue",
+      header: "RAM",
+      cell: ({ row }) => (row.original.ramPresent ? "Yes" : "No"),
+    },
+    {
+      id: "excelRamCap",
+      header: "RAM (Excel)",
+      cell: ({ row }) => (row.original as any).excelRamCapacity ? String((row.original as any).excelRamCapacity) : "-",
+    },
+    {
+      id: "pmRamCap",
+      header: "RAM (PM)",
+      cell: ({ row }) => row.original.ramCapacity || "-",
+    },
+    {
+      id: "hddValue",
+      header: "HDD",
+      cell: ({ row }) => (row.original.hddPresent ? "Yes" : "No"),
+    },
+    {
+      id: "excelHddCap",
+      header: "HDD (Excel)",
+      cell: ({ row }) => (row.original as any).excelHdd ? String((row.original as any).excelHdd) : "-",
+    },
+    {
+      id: "pmHddCap",
+      header: "HDD (PM)",
+      cell: ({ row }) => row.original.hdd || "-",
+    },
+    {
+      id: "ssdValue",
+      header: "SSD",
+      cell: ({ row }) => (row.original.ssdPresent ? "Yes" : "No"),
+    },
+    {
+      id: "excelSsdCap",
+      header: "SSD (Excel)",
+      cell: ({ row }) => (row.original as any).excelSsd ? String((row.original as any).excelSsd) : "-",
+    },
+    {
+      id: "pmSsdCap",
+      header: "SSD (PM)",
+      cell: ({ row }) => row.original.ssd || "-",
+    },
     { accessorKey: "salePrice", header: "Sale Price", cell: ({ row }) => `₹${(row.getValue("salePrice") as number).toLocaleString()}` },
     { accessorKey: "suggestedSalePrice", header: "Suggested Price", cell: ({ row }) => <span className="font-bold text-green-600">₹{(row.getValue("suggestedSalePrice") as number).toLocaleString()}</span> },
     {

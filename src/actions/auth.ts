@@ -14,7 +14,7 @@ export async function signUp(formData: FormData) {
   const password = formData.get("password") as string
   const name = formData.get("name") as string
 
-  console.log("Signup attempt for:", email)
+  // signup attempt
 
   try {
     const existingUser = await prisma.user.findUnique({
@@ -33,13 +33,13 @@ export async function signUp(formData: FormData) {
       }
     })
 
-    console.log("User created:", user.id)
 
-    // Set session cookie
+    // Set session cookie (httpOnly, secure in production, 7 days expiry)
     const cookieStore = await cookies()
     cookieStore.set("session", user.id, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
       maxAge: 60 * 60 * 24 * 7, // 1 week
       path: "/"
     })
@@ -55,7 +55,7 @@ export async function signIn(formData: FormData) {
   const email = formData.get("email") as string
   const password = formData.get("password") as string
 
-  console.log("Signin attempt for:", email)
+  // signin attempt
 
   try {
     const user = await prisma.user.findUnique({
@@ -63,22 +63,19 @@ export async function signIn(formData: FormData) {
     })
 
     if (!user) {
-        console.log("User not found:", email)
-        return { success: false, error: "User not found. Please sign up first." }
+      return { success: false, error: "User not found. Please sign up first." }
     }
 
     if (user.password !== hashPassword(password)) {
-        console.log("Password mismatch for:", email)
-        return { success: false, error: "Wrong password." }
+      return { success: false, error: "Wrong password." }
     }
-
-    console.log("Signin success for:", user.id)
 
     // Set session cookie
     const cookieStore = await cookies()
     cookieStore.set("session", user.id, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
       maxAge: 60 * 60 * 24 * 7, // 1 week
       path: "/"
     })

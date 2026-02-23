@@ -47,17 +47,6 @@ model SparePart {
   @@map("spare_parts")
 }
 
-model User {
-  id        String   @id @default(uuid())
-  email     String   @unique
-  password  String
-  name      String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@map("users")
-}
-
 model PriceCalculator {
   id                 String   @id @default(uuid())
   productName        String
@@ -70,10 +59,13 @@ model PriceCalculator {
   generation         String?
   ramPresent         Boolean  @default(true)
   ramCapacity        String?
+  excelRamCapacity   String?
   hddPresent         Boolean  @default(true)
   hdd                String?
+  excelHdd           String?
   ssdPresent         Boolean  @default(true)
   ssd                String?
+  excelSsd           String?
   frontPanel         String   @default("ok")
   frontPanelCost     Decimal  @default(0) @db.Decimal(10, 2)
   panel              String   @default("ok")
@@ -99,4 +91,15 @@ model PriceCalculator {
   updatedAt          DateTime @updatedAt
 
   @@map("price_calculations")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  name      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("users")
 }

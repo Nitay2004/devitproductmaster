@@ -1,5 +1,6 @@
 "use client"
 
+import React, { useEffect, useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { formatDistanceToNow } from "date-fns"
 import { Package, Wrench } from "lucide-react"
@@ -10,6 +11,22 @@ interface ActivityItem {
   make: string
   modelNumber: string
   createdAt: string | Date
+}
+
+function RelativeTime({ date }: { date: string | Date }) {
+  const dt = new Date(date)
+  // Use a deterministic server/client initial string to avoid hydration mismatch
+  const initial = dt.toUTCString()
+  const [text, setText] = useState<string>(initial)
+
+  useEffect(() => {
+    const update = () => setText(formatDistanceToNow(dt, { addSuffix: true }))
+    update()
+    const id = setInterval(update, 60 * 1000)
+    return () => clearInterval(id)
+  }, [date])
+
+  return <p className="text-xs text-muted-foreground">{text}</p>
 }
 
 export function RecentActivity({ activity }: { activity: ActivityItem[] }) {
@@ -32,9 +49,7 @@ export function RecentActivity({ activity }: { activity: ActivityItem[] }) {
                   <p className="text-sm font-medium leading-none">
                     Added {item.type}: <span className="text-blue-600">{item.make} {item.modelNumber}</span>
                   </p>
-                  <p className="text-xs text-muted-foreground">
-                    {formatDistanceToNow(new Date(item.createdAt), { addSuffix: true })}
-                  </p>
+                  <RelativeTime date={item.createdAt} />
                 </div>
               </div>
             ))
